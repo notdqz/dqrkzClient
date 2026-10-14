@@ -3,25 +3,21 @@
 	"id": "dqrkz",
 	"version": "${version}",
 	"name": "dqrkz",
-	"description": "This is an example description! Tell everyone what your mod is about!",
+	"description": "dqrkzClient",
 	"authors": [
-		"Me!"
+		"dqrkz"
 	],
-	"contact": {
-		"homepage": "https://fabricmc.net/",
-		"sources": "https://github.com/FabricMC/fabric-example-mod"
-	},
 	"license": "CC0-1.0",
 	"icon": "assets/dqrkz/icon.png",
-	"environment": "*",
+	"environment": "client",
 	"entrypoints": {
 		"main": [
 			"com.dqrkz.Dqrkz"
+		],
+		"client": [
+			"com.dqrkz.DqrkzClient"
 		]
 	},
-	"mixins": [
-		"dqrkz.mixins.json"
-	],
 	"depends": {
 		"fabricloader": ">=0.19.5",
 		"minecraft": "~1.21.11",
