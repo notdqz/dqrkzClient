@@ -5,7 +5,8 @@
 	"mixins": [],
 	"client": [
 		"EntityMixin",
-		"PlayerMixin"
+		"PlayerMixin",
+		"MinecraftAccessor"
 	],
 	"injectors": {
 		"defaultRequire": 1

@@ -1,2 +1,13 @@
 /gamemode survival
 /gamemode creative
+/gamemode survival
+/effect give Player66 minecraft:hunger infinite 3
+/gamemode creative
+/gamemode survival
+/gamemode creative
+/gamemode survival
+/gamemode creative
+/gamemode survival
+/gamemode creative
+/gamemode survival
+/gamemode creative
