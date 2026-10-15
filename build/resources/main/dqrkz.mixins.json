@@ -1,0 +1,13 @@
+{
+	"required": true,
+	"package": "com.dqrkz.mixin",
+	"compatibilityLevel": "JAVA_21",
+	"mixins": [],
+	"client": [
+		"EntityMixin",
+		"PlayerMixin"
+	],
+	"injectors": {
+		"defaultRequire": 1
+	}
+}

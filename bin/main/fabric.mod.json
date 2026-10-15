@@ -1,0 +1,32 @@
+{
+	"schemaVersion": 1,
+	"id": "dqrkz",
+	"version": "${version}",
+	"name": "dqrkz",
+	"description": "dqrkzClient",
+	"authors": [
+		"dqrkz"
+	],
+	"license": "CC0-1.0",
+	"icon": "assets/dqrkz/icon.png",
+	"environment": "client",
+	"entrypoints": {
+		"main": [
+			"com.dqrkz.Dqrkz"
+		],
+		"client": [
+			"com.dqrkz.DqrkzClient"
+		]
+	},
+	"depends": {
+		"fabricloader": ">=0.19.5",
+		"minecraft": "~1.21.11",
+		"java": ">=21",
+		"fabric-api": "*"
+	},
+
+	"mixins": [
+		"dqrkz.mixins.json"
+	]
+	
+}

@@ -1,6 +1,7 @@
 package com.dqrkz;
 
 import com.dqrkz.gui.MenuScreen;
+import com.dqrkz.module.ModuleManager;
 import com.mojang.blaze3d.platform.InputConstants;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
@@ -21,6 +22,8 @@ public class DqrkzClient implements ClientModInitializer {
 				GLFW.GLFW_KEY_RIGHT_SHIFT,
 				category
 		));
+
+		ModuleManager.init();
 
 		ClientTickEvents.END_CLIENT_TICK.register(client -> {
 			while (openMenu.consumeClick()) {

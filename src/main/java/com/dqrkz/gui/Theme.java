@@ -13,4 +13,5 @@ public final class Theme {
 	public static final int TEXT       = 0xFFC8C8CE;
 	public static final int TEXT_DIM   = 0xFF7C7C86;
 	public static final int TEXT_HOVER = 0xFFFFFFFF;
+	public static final int SCROLL     = 0xFF3A3A44;
 }

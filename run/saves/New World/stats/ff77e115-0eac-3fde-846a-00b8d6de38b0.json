@@ -1,0 +1,34 @@
+{
+  "stats": {
+    "minecraft:used": {
+      "minecraft:grass_block": 47,
+      "minecraft:soul_sand": 6,
+      "minecraft:lava_bucket": 22,
+      "minecraft:water_bucket": 63,
+      "minecraft:sponge": 1,
+      "minecraft:chest": 1,
+      "minecraft:cobweb": 5
+    },
+    "minecraft:custom": {
+      "minecraft:time_since_rest": 15508,
+      "minecraft:walk_one_cm": 55293,
+      "minecraft:leave_game": 1,
+      "minecraft:walk_under_water_one_cm": 3030,
+      "minecraft:damage_taken": 60,
+      "minecraft:damage_dealt": 290,
+      "minecraft:play_time": 15508,
+      "minecraft:jump": 280,
+      "minecraft:time_since_death": 15508,
+      "minecraft:sprint_one_cm": 56732,
+      "minecraft:open_chest": 1,
+      "minecraft:fall_one_cm": 225,
+      "minecraft:swim_one_cm": 4287,
+      "minecraft:total_world_time": 16657,
+      "minecraft:fly_one_cm": 65033,
+      "minecraft:walk_on_water_one_cm": 15023,
+      "minecraft:crouch_one_cm": 226,
+      "minecraft:sneak_time": 46
+    }
+  },
+  "DataVersion": 4671
+}

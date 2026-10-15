@@ -11,7 +11,6 @@ import net.minecraft.network.chat.Component;
 import org.lwjgl.glfw.GLFW;
 
 public class MenuScreen extends Screen {
-	// Sizes are in GUI-scaled pixels. Tweak these to resize the window.
 	private static final int W = 400;
 	private static final int H = 250;
 	private static final int TITLE_H = 16;
@@ -22,10 +21,10 @@ public class MenuScreen extends Screen {
 	private static final int GROUP_GAP = 12;
 	private static final int GROUP_HEAD = 12;
 
-	// Static so position and selected tab are remembered between openings.
 	private static int winX = Integer.MIN_VALUE;
 	private static int winY;
 	private static int selectedTab = 0;
+	private static int scroll = 0;
 
 	private boolean draggingWindow;
 	private int dragOffX, dragOffY;
@@ -56,8 +55,29 @@ public class MenuScreen extends Screen {
 
 	@Override
 	public void renderBackground(GuiGraphics g, int mouseX, int mouseY, float delta) {
-		// No blur, just a light dim.
 		g.fill(0, 0, width, height, 0x55000000);
+	}
+
+	// ---------------------------------------------------------------- layout
+
+	private static int groupHeight(Group group) {
+		int h = GROUP_HEAD + 4;
+		for (Setting s : group.settings) h += s.height();
+		return h;
+	}
+
+	private static int contentHeight(Tab tab) {
+		int[] col = {0, 0};
+		for (Group g : tab.groups) col[g.column] += groupHeight(g) + GROUP_GAP;
+		return PAD + 4 + Math.max(col[0], col[1]) - GROUP_GAP + PAD;
+	}
+
+	private static int viewHeight() {
+		return H - TITLE_H - 1 - FOOTER_H;
+	}
+
+	private static int maxScroll() {
+		return Math.max(0, contentHeight(Menu.TABS.get(selectedTab)) - viewHeight());
 	}
 
 	// ---------------------------------------------------------------- drawing
@@ -88,7 +108,7 @@ public class MenuScreen extends Screen {
 		g.fill(x, y, x + W, y + 1, Theme.ACCENT);
 		g.fill(x, y + TITLE_H, x + W, y + TITLE_H + 1, Theme.BORDER);
 		text(g, "dqrkz", x + 6, y + 5, Theme.ACCENT);
-		text(g, "client", x + 6 + font.width("dqrkz ") , y + 5, Theme.TEXT_DIM);
+		text(g, "client", x + 6 + font.width("dqrkz "), y + 5, Theme.TEXT_DIM);
 
 		int bodyTop = y + TITLE_H + 1;
 		int bodyBottom = y + H - FOOTER_H;
@@ -117,21 +137,30 @@ public class MenuScreen extends Screen {
 		String ver = "1.21.11";
 		text(g, ver, x + W - 6 - font.width(ver), bodyBottom + 4, Theme.TEXT_DIM);
 
-		// Content area
+		// Content
 		Tab tab = Menu.TABS.get(selectedTab);
-		int contentX = x + SIDEBAR_W + 1 + PAD;
+		int viewLeft = x + SIDEBAR_W + 1;
+		int viewH = bodyBottom - bodyTop;
+		int contentH = contentHeight(tab);
+		int maxScroll = Math.max(0, contentH - viewH);
+		scroll = Math.max(0, Math.min(scroll, maxScroll));
+
+		int contentX = viewLeft + PAD;
 		int colW = (W - SIDEBAR_W - 1 - PAD * 3) / 2;
-		int[] colY = {bodyTop + PAD + 4, bodyTop + PAD + 4};
+		int startY = bodyTop + PAD + 4 - scroll;
+		int[] colY = {startY, startY};
+
+		g.enableScissor(viewLeft, bodyTop, x + W, bodyBottom);
+
+		if (tab.groups.isEmpty()) {
+			text(g, "Nothing here yet", contentX, bodyTop + PAD + 4, Theme.TEXT_DIM);
+		}
 
 		for (Group group : tab.groups) {
 			int gx = contentX + group.column * (colW + PAD);
 			int gy = colY[group.column];
+			int gh = groupHeight(group);
 
-			int inner = 0;
-			for (Setting s : group.settings) inner += s.height();
-			int gh = GROUP_HEAD + inner + 4;
-
-			// Box with the title sitting on the top border
 			outline(g, gx, gy, colW, gh, Theme.BORDER);
 			int tw = font.width(group.title);
 			g.fill(gx + 5, gy, gx + 9 + tw, gy + 1, Theme.BG);
@@ -147,6 +176,15 @@ public class MenuScreen extends Screen {
 			}
 
 			colY[group.column] += gh + GROUP_GAP;
+		}
+
+		g.disableScissor();
+
+		// Scrollbar
+		if (maxScroll > 0) {
+			int thumbH = Math.max(12, viewH * viewH / contentH);
+			int thumbY = (int) ((viewH - thumbH) * (scroll / (double) maxScroll));
+			g.fill(x + W - 3, bodyTop + thumbY, x + W - 1, bodyTop + thumbY + thumbH, Theme.SCROLL);
 		}
 	}
 
@@ -181,7 +219,7 @@ public class MenuScreen extends Screen {
 		double mx = event.x(), my = event.y();
 		if (mx < winX || mx >= winX + W || my < winY || my >= winY + H) return true;
 
-		// Title bar -> drag window
+		// Title bar -> drag
 		if (my < winY + TITLE_H) {
 			draggingWindow = true;
 			dragOffX = (int) (mx - winX);
@@ -189,12 +227,15 @@ public class MenuScreen extends Screen {
 			return true;
 		}
 
-		// Sidebar tabs
 		int bodyTop = winY + TITLE_H + 1;
+		int bodyBottom = winY + H - FOOTER_H;
+
+		// Sidebar tabs
 		if (mx < winX + SIDEBAR_W) {
 			for (int i = 0; i < Menu.TABS.size(); i++) {
 				int ty = bodyTop + 6 + i * TAB_H;
 				if (my >= ty && my < ty + TAB_H) {
+					if (selectedTab != i) scroll = 0;
 					selectedTab = i;
 					return true;
 				}
@@ -202,7 +243,9 @@ public class MenuScreen extends Screen {
 			return true;
 		}
 
-		// Settings
+		// Settings (only inside the visible content area)
+		if (my < bodyTop || my >= bodyBottom) return true;
+
 		for (Group group : Menu.TABS.get(selectedTab).groups) {
 			for (Setting s : group.settings) {
 				if (!s.hit(mx, my)) continue;
@@ -238,6 +281,15 @@ public class MenuScreen extends Screen {
 		draggingWindow = false;
 		activeSlider = null;
 		return super.mouseReleased(event);
+	}
+
+	@Override
+	public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
+		if (mouseX >= winX && mouseX < winX + W && mouseY >= winY && mouseY < winY + H) {
+			scroll = Math.max(0, Math.min(scroll - (int) (scrollY * 12), maxScroll()));
+			return true;
+		}
+		return super.mouseScrolled(mouseX, mouseY, scrollX, scrollY);
 	}
 
 	@Override
